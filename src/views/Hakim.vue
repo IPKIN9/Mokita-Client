@@ -39,21 +39,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="text-uppercase">
-                                        <td class="align-top">1.</td>
+                                    <tr v-for="(hakim, index) in hakimList" :key="index" class="text-uppercase">
+                                        <td class="align-top">{{ index + 1 }}.</td>
                                         <td class="align-top">
-                                            <span class="text-bold-500">Irwandi Paputungan</span><br>
-                                            <small>5520117043</small>
+                                            <span class="text-bold-500">{{ hakim.nama }}</span><br>
+                                            <small>{{ hakim.nip }}</small>
                                         </td>
-                                        <td class="align-top">Lolak <br> 12-11-1999</td>
-                                        <td class="align-top">Hakim ketua</td>
+                                        <td class="align-top">{{ hakim.tempat_lahir }} <br> {{ hakim.tgl_lahir }}
+                                        </td>
+                                        <td class="align-top">{{ hakim.jabatan }}</td>
                                         <td class="align-top">
                                             <ul>
-                                                <li>S1 Komputer</li>
-                                                <li>S2 Komputer</li>
+                                                <li>{{ hakim.s1 }}</li>
+                                                <li v-if="hakim.s2">{{ hakim.s2 }}</li>
+                                                <li v-if="hakim.s3">{{ hakim.s3 }}</li>
                                             </ul>
                                         </td>
-                                        <td class="align-top">sertifikat</td>
+                                        <td class="align-top">{{ hakim.sertifikat }}</td>
                                         <td class="align-top">
                                             <BaseButtonVue class="btn-outline-primary btn-sm rounded">EDIT
                                             </BaseButtonVue>
@@ -66,8 +68,8 @@
                         </div>
                     </div>
                     <div class="container-fluid row">
-                        <PaginationVue :limit="meta.limit" :page="meta.page" :pageOf="meta.pageOf"
-                            :total="meta.total" />
+                        <PaginationVue :limit="meta.limit" :page="meta.page" :pageOf="meta.pageOf" :total="meta.total"
+                            @eventClick="changePaging" />
                     </div>
                 </div>
             </section>
@@ -76,25 +78,59 @@
     </div>
 </template>
 <script setup>
+import HakimApi from '../utils/HakimApi'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
 import BaseSelectVue from '../components/input/BaseSelect.vue'
 import BaseInputVue from '../components/input/BaseInput.vue'
 import BaseButtonVue from '../components/button/BaseButton.vue'
 import PaginationVue from '../components/Pagination.vue'
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 
 // ##########################################################
 // Get data config
+const hakimList = ref([])
+const search = ref('')
 const meta = reactive({
     limit: 10,
     page: 1,
     pageOf: 10,
-    total: 50
+    total: 10
 })
+
+const getHakimList = () => {
+    HakimApi.getList(meta.limit, meta.page)
+        .then((res) => {
+            let item = res.data
+
+            hakimList.value = item.data
+
+            meta.page = item.meta.page
+            meta.pageOf = item.meta.page_of
+            meta.total = item.meta.total
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+}
 
 // ##########################################################
 // Extends funct
+watch(meta, (newLimit) => {
+    if (newLimit.limit) {
+        getHakimList()
+    }
+})
+
+const changePaging = (params) => {
+    if (params === 'next') {
+        meta.page = meta.page + 1
+    } else {
+        meta.page = meta.page - 1
+    }
+    getHakimList()
+}
+
 const selectOptions = [
     { value: 10, label: 10 },
     { value: 25, label: 25 },
@@ -106,4 +142,8 @@ const selectDisplay = {
     value: 'value',
     label: 'label'
 }
+
+onMounted(() => {
+    getHakimList()
+})
 </script>

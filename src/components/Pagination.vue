@@ -2,18 +2,20 @@
   <div v-if="show" class="dataTable-bottom d-flex">
     <div class="dataTable-info py-2 flex-grow-1">Showing {{ page }} to {{ pageOf }} of {{ total }} entries</div>
     <ul class="pagination pagination-primary float-end dataTable-pagination">
-      <li class="page-item pager"><button v-if="previous" class="page-link">‹ Previous</button></li>
+      <li @click="eventTriger('pre')" class="page-item pager"><button v-if="previous" class="page-link">‹
+          Previous</button></li>
       <li class="page-item active">
         <div class="page-link">{{ page }}</div>
       </li>
-      <li class="page-item pager"><button v-if="next" class="page-link">Next ›</button></li>
+      <li @click="eventTriger('next')" class="page-item pager"><button v-if="next" class="page-link">Next ›</button>
+      </li>
     </ul>
   </div>
 </template>
 <script setup>
 import { computed } from 'vue';
 
-
+const emits = defineEmits(['eventClick'])
 const props = defineProps({
   limit: [String, Number],
   page: [String, Number],
@@ -44,4 +46,8 @@ const next = computed(() => {
     return true
   }
 })
+
+const eventTriger = (params) => {
+  emits('eventClick', params)
+}
 </script>
