@@ -12,7 +12,8 @@
                     <div class="col-10">
                         <h3>Hakim</h3>
                     </div>
-                    <BaseButtonVue @clickEvent="showHideModal" class="btn-primary rounded col-2">Tambah Data
+                    <BaseButtonVue @clickEvent="showHideModal" typeButton="new-data" class="btn-primary rounded col-2">
+                        Tambah Data
                     </BaseButtonVue>
                 </div>
             </div>
@@ -58,9 +59,11 @@
                                         </td>
                                         <td class="align-top">{{ hakim.sertifikat }}</td>
                                         <td class="align-top">
-                                            <BaseButtonVue class="btn-outline-primary btn-sm rounded">EDIT
+                                            <BaseButtonVue class="btn-outline-primary btn-sm rounded"
+                                                @clickEvent="editHakim" :dataRows="hakimList[index]">EDIT
                                             </BaseButtonVue>
-                                            <BaseButtonVue class="btn-outline-danger btn-sm rounded ms-2">HAPUS
+                                            <BaseButtonVue class="btn-outline-danger btn-sm rounded ms-2"
+                                                @clickEvent="deleteHakim" :dataId="hakim.id">HAPUS
                                             </BaseButtonVue>
                                         </td>
                                     </tr>
@@ -89,24 +92,36 @@
                             <div class="form-group">
                                 <label for="helpInputTop">Nama</label>
                                 <BaseInputVue v-model="payload.nama" placeholder="Input here..." />
+                                <span v-for="error in v$.nama.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label for="helpInputTop">Nip</label>
                                 <BaseInputVue v-model="payload.nip" typeOf="number" placeholder="Input here..." />
+                                <span v-for="error in v$.nip.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
                             </div>
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label for="helpInputTop">Tempat Lahir</label>
                                 <BaseInputVue v-model="payload.tempat_lahir" placeholder="Input here..." />
+                                <span v-for="error in v$.tempat_lahir.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
                             </div>
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label for="helpInputTop">Tanggal Lahir</label>
                                 <BaseInputVue v-model="payload.tgl_lahir" typeOf="date" placeholder="Input here..." />
+                                <span v-for="error in v$.tgl_lahir.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
                             </div>
                         </div>
                         <div class="col-lg-6 mt-2">
@@ -114,16 +129,25 @@
                                 <label for="helpInputTop">Jabatan</label>
                                 <BaseSelectVue v-model="payload.jabatan" :options="disJabatanOptions"
                                     :display="diJabatan" />
+                                <span v-for="error in v$.jabatan.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
                             </div>
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label for="helpInputTop">Nomor Sertifikat</label>
                                 <BaseInputVue v-model="payload.sertifikat" placeholder="Input here..." />
+                                <span v-for="error in v$.sertifikat.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
                             </div>
                         </div>
                         <div class="col-lg-4 mt-3">
                             <BaseTextAreaVue v-model="payload.s1" label="Pendidikan S1" />
+                            <span v-for="error in v$.s1.$errors" :key="error.$uid">
+                                <small class="text-danger">field {{ error.$message }}.</small>
+                            </span>
                         </div>
                         <div class="col-lg-4 mt-3">
                             <BaseTextAreaVue v-model="payload.s2" label="Pendidikan S2" />
@@ -143,6 +167,8 @@
 </template>
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
 import HakimApi from '../utils/HakimApi'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
@@ -153,6 +179,7 @@ import BaseButtonVue from '../components/button/BaseButton.vue'
 import PaginationVue from '../components/Pagination.vue'
 import BaseModalVue from '../components/BaseModal.vue'
 import BaseTextAreaVue from '../components/input/BaseTextArea.vue'
+import SweetAlert from '../utils/SweetAlert'
 
 // ##########################################################
 // Get data config
@@ -194,13 +221,87 @@ const payload = reactive({
     sertifikat: '',
 })
 
-const upsertHakim = () => {
-    HakimApi.upsert(payload)
+const myRegex = helpers.regex(/^[\w\s\d-]+$/d)
+
+const rules = computed(() => {
+    return {
+        nama: {
+            required,
+            maxLength: maxLength(100),
+            myField: helpers.withMessage('value cannot contain special characters', myRegex)
+        },
+        nip: {
+            required,
+            numeric,
+            maxLength: maxLength(13),
+        },
+        tempat_lahir: {
+            required,
+            maxLength: maxLength(150)
+        },
+        tgl_lahir: { required },
+        jabatan: {
+            required,
+            maxLength: maxLength(100)
+        },
+        s1: { required },
+        sertifikat: {
+            required,
+            maxLength: maxLength(100)
+        }
+    }
+})
+const v$ = useVuelidate(rules, payload)
+
+const upsertHakim = async () => {
+    let validation = await v$.value.$validate()
+    if (validation) {
+        HakimApi.upsert(payload)
+            .then((res) => {
+                showHideModal()
+                let item = res.data
+                AlertSuccess({
+                    text: item.message
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+}
+
+// ##########################################################
+// Edit data config
+const editHakim = (params) => {
+    for (const key in params.dataRows) {
+        payload[key] = params.dataRows[key]
+    }
+    console.log(payload);
+    showHideModal()
+}
+
+// ##########################################################
+// Delete data config
+const deleteHakim = (params) => {
+    SweetAlert.alertConfirm({
+        title: 'Delete?',
+        confirmtext: 'Yes, Deleted it'
+    })
         .then((res) => {
-            console.log(res.data)
-        })
-        .catch((err) => {
-            console.log(err)
+            if (res.isConfirmed) {
+                if (searchField.value.length === 1 && meta.page != 0) {
+                    search.value = ''
+                    meta.page = meta.page - 1
+                }
+                HakimApi.delete(params.dataId)
+                    .then((res) => {
+                        let item = res.data
+                        AlertSuccess({ text: item.message })
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+            }
         })
 }
 
@@ -258,8 +359,31 @@ const diJabatan = {
 }
 
 const myModal = ref(null)
-const showHideModal = () => {
+const showHideModal = (params) => {
+    if (params && params.typeButton === 'new-data') {
+        clearInput()
+    }
     myModal.value.show() ? myModal.value.show() : myModal.value.hide()
+}
+
+const clearInput = () => {
+    v$.value.$reset()
+    for (const key in payload) {
+        for (const key in payload) {
+            payload[key] = ''
+        }
+        delete payload.id
+    }
+}
+
+const AlertSuccess = (options) => {
+    SweetAlert.alertSuccess(options.text)
+        .then((res) => {
+            if (res.isConfirmed) {
+                getHakimList()
+                clearInput()
+            }
+        })
 }
 
 onMounted(() => {

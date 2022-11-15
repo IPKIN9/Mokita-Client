@@ -24,7 +24,7 @@ const props = defineProps({
 })
 
 const show = computed(() => {
-  if (props.limit === props.total) {
+  if (props.limit === props.total || props.total <= props.limit) {
     return false
   } else {
     return true

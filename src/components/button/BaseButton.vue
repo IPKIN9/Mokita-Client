@@ -5,7 +5,18 @@
 </template>
 <script setup>
 const emits = defineEmits(['clickEvent'])
+let props = defineProps({
+  dataRows: {
+    type: Object,
+  },
+  dataId: {
+    type: Number
+  },
+  typeButton: {
+    type: String
+  }
+})
 const eventTriger = () => {
-  emits('clickEvent')
+  emits('clickEvent', props)
 }
 </script>
