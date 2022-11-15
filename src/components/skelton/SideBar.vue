@@ -15,11 +15,12 @@
             <ul class="menu">
                 <li class="sidebar-title">Menu</li>
 
-                <li class="sidebar-item  active">
-                    <a href="index.html" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
+                <li :class="$route.name === 'dashboard' ? 'sidebar-item active' : 'sidebar-item'">
+                    <BaseLinkVue label="Dashboard" :to="{name: 'dashboard'}" class='sidebar-link' icon="bi bi-grid-fill" />
+                </li>
+
+                <li :class="$route.name === 'hakim' ? 'sidebar-item active' : 'sidebar-item'">
+                    <BaseLinkVue label="Hakim" :to="{name: 'hakim'}" class='sidebar-link' icon="bi bi-person-circle" />
                 </li>
             </ul>
         </div>
@@ -27,6 +28,12 @@
     </div>
 </div>
 </template>
+<script setup>
+    import { useRouter } from "vue-router"
+    import BaseLinkVue from '../button/BaseLink.vue'
+
+    const router = useRouter
+</script>
 <script>
     export default {
         mounted() {
