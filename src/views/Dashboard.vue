@@ -34,6 +34,6 @@
   </div>
 </template>
 <script setup>
-  import SideBarVue from './skelton/SideBar.vue'
-  import FooterVue from './skelton/Footer.vue'
+  import SideBarVue from '../components/skelton/SideBar.vue'
+  import FooterVue from '../components/skelton/Footer.vue'
 </script>
