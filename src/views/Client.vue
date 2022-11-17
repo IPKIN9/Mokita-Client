@@ -37,42 +37,50 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="text-uppercase">
-                                        <td class="align-top">1.</td>
+                                    <tr v-for="(client, index) in clientList" class="text-uppercase">
+                                        <td class="align-top">{{index + 1}}.</td>
                                         <td class="align-top">
-                                            <span class="fw-bold">Irwandi Paputungan</span> <br>
+                                            <span class="fw-bold">{{client.nama}}</span> <br>
                                             <div class="d-flex">
                                                 <div class="flex-fill text-capitalize">
                                                     <ul class="list-group mt-1">
-                                                        <li class="list-group small">Status: Tergugat</li>
-                                                        <li class="list-group small">Tempat lahir: Lolak</li>
-                                                        <li class="list-group small">Tgl Lahir: 22-09-1999</li>
+                                                        <li class="list-group small">Status: {{client.status}}</li>
+                                                        <li class="list-group small">Tempat lahir: {{client.tempat_lahir}}</li>
+                                                        <li class="list-group small">Tgl Lahir: {{moment(client.tgl_lahir).format('DD MMMM, YYYY')}}</li>
                                                     </ul>
                                                 </div>
                                                 <div class="flex-fill text-capitalize">
                                                     <ul class="list-group mt-1">
-                                                        <li class="list-group small">Agama: islam</li>
-                                                        <li class="list-group small">Pendidikan: s1 komputer</li>
-                                                        <li class="list-group small">Pekerjaan: programmer</li>
+                                                        <li class="list-group small">Agama: {{client.agama}}</li>
+                                                        <li class="list-group small">Pendidikan: {{client.pendidikan}}</li>
+                                                        <li class="list-group small">Pekerjaan: {{client.pekerjaan}}</li>
                                                     </ul>
                                                 </div>
                                                 <div class="flex-fill text-capitalize">
                                                     <ul class="list-group mt-1">
-                                                        <li class="list-group small">Alamat: Jl. asam 1 no 25</li>
-                                                        <li class="list-group small">kel. lere, kec. palu barat,
-                                                            palu</li>
+                                                        <li class="list-group small">Alamat: {{client.alamat}}</li>
+                                                        <li class="list-group small">kel. {{client.kel}}, kec. {{client.kec}},
+                                                            {{client.kab}}</li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </td>
+                                        <td class="align-middle">
+                                            <BaseButtonVue class="btn-outline-primary btn-sm rounded"
+                                                :dataRows="clientList[index]">EDIT
+                                            </BaseButtonVue>
+                                            <BaseButtonVue class="btn-outline-danger btn-sm rounded ms-2"
+                                                :dataId="client.id">HAPUS
+                                            </BaseButtonVue>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <!-- <div v-if="searchField.length < 1" class="d-flex justify-content-center p-5">
+                            <div v-if="clientList.length < 1" class="d-flex justify-content-center p-5">
                                 <div class="fs-3 me-2"><i class="bi bi-emoji-laughing"></i></div>
                                 <span class="fs-4 fw-bold text-secondary">Data not
                                     exist</span>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                     <!-- <div class="container-fluid row">
@@ -87,6 +95,113 @@
             <template v-slot:body>
                 <div class="modal-body">
                     <form class="pt-2 row" style="padding-bottom: 56px;">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="helpInputTop">Status</label>
+                                <BaseSelectVue v-model="payload.status" :options="disStatusOptions"
+                                    :display="diStatus" />
+                                <span v-for="error in v$.status.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" mt-3>
+                            <div class="form-group">
+                                <label for="helpInputTop">Nama</label>
+                                <BaseInputVue v-model="payload.nama" placeholder="Input here..." />
+                                <span v-for="error in v$.nama.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" mt-3>
+                            <div class="form-group">
+                                <label for="helpInputTop">Marga</label>
+                                <BaseInputVue v-model="payload.marga" placeholder="Input here..." />
+                                <span v-for="error in v$.marga.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="helpInputTop">Tempat Lahir</label>
+                                <BaseInputVue v-model="payload.tempat_lahir" placeholder="Input here..." />
+                                <span v-for="error in v$.tempat_lahir.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="helpInputTop">Tanggal Lahir</label>
+                                <BaseInputVue v-model="payload.tgl_lahir" placeholder="Input here..." />
+                                <span v-for="error in v$.tgl_lahir.$errors" typeOf="date" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="helpInputTop">Agama</label>
+                                <BaseSelectVue v-model="payload.agama" :options="disAgamaOptions"
+                                    :display="diAgama" />
+                                <span v-for="error in v$.agama.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="helpInputTop">Pendidikan</label>
+                                <BaseInputVue v-model="payload.pendidikan" placeholder="Input here..." />
+                                <span v-for="error in v$.pendidikan.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="helpInputTop">Pekerjaan</label>
+                                <BaseInputVue v-model="payload.pekerjaan" placeholder="Input here..." />
+                                <span v-for="error in v$.pekerjaan.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mt-3 mb-3">
+                            <BaseTextAreaVue v-model="payload.alamat" label="Alamat" />
+                            <span v-for="error in v$.alamat.$errors" :key="error.$uid">
+                                <small class="text-danger">field {{ error.$message }}.</small>
+                            </span>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="helpInputTop">Kelurahan</label>
+                                <BaseInputVue v-model="payload.kel" placeholder="Input here..." />
+                                <span v-for="error in v$.kel.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="helpInputTop">Kecamataan</label>
+                                <BaseInputVue v-model="payload.kec" placeholder="Input here..." />
+                                <span v-for="error in v$.kec.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="helpInputTop">Kabupaten</label>
+                                <BaseInputVue v-model="payload.kab" placeholder="Input here..." />
+                                <span v-for="error in v$.kab.$errors" :key="error.$uid">
+                                    <small class="text-danger">field {{ error.$message }}.</small>
+                                </span>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </template>
@@ -101,7 +216,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
-import HakimApi from '../utils/HakimApi'
+import ClientApi from '../utils/ClientApi'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -112,10 +227,11 @@ import PaginationVue from '../components/Pagination.vue'
 import BaseModalVue from '../components/BaseModal.vue'
 import BaseTextAreaVue from '../components/input/BaseTextArea.vue'
 import SweetAlert from '../utils/SweetAlert'
+import moment from 'moment'
 
 // ##########################################################
 // Get data config
-const hakimList = ref([])
+const clientList = ref([])
 const meta = reactive({
     limit: 10,
     page: 1,
@@ -123,84 +239,108 @@ const meta = reactive({
     total: 10
 })
 
-// const getHakimList = () => {
-//     HakimApi.getList(meta.limit, meta.page)
-//         .then((res) => {
-//             let item = res.data
+const getClientList = () => {
+    ClientApi.getList(meta.limit, meta.page)
+        .then((res) => {
+            let item = res.data
 
-//             hakimList.value = item.data
+            clientList.value = item.data
 
-//             meta.page = item.meta.page
-//             meta.pageOf = item.meta.page_of
-//             meta.total = item.meta.total
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         })
-// }
+            meta.page = item.meta.page
+            meta.pageOf = item.meta.page_of
+            meta.total = item.meta.total
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+}
 
 // ##########################################################
 // Upsert data config
 const payload = reactive({
+    status: '',
     nama: '',
-    nip: '',
+    marga: '',
     tempat_lahir: '',
     tgl_lahir: '',
-    jabatan: '',
-    s1: '',
-    s2: '',
-    s3: '',
-    sertifikat: '',
+    agama: '',
+    pendidikan: '',
+    pekerjaan: '',
+    alamat: '',
+    kel: '',
+    kec: '',
+    kab: '',
 })
 
 const myRegex = helpers.regex(/^[\w\s\d-]+$/d)
 
 const rules = computed(() => {
     return {
-        nama: {
-            required,
-            maxLength: maxLength(100),
-            myField: helpers.withMessage('value cannot contain special characters', myRegex)
-        },
-        nip: {
+        status: {
             required,
             numeric,
-            maxLength: maxLength(13),
+            maxLength: maxLength(20),
+        },
+        nama: {
+            required,
+            maxLength: maxLength(50),
+            myField: helpers.withMessage('value cannot contain special characters', myRegex)
+        },
+        marga: {
+            required,
+            maxLength: maxLength(50),
         },
         tempat_lahir: {
             required,
             maxLength: maxLength(150)
         },
         tgl_lahir: { required },
-        jabatan: {
+        agama: {
             required,
-            maxLength: maxLength(100)
+            maxLength: maxLength(15)
         },
-        s1: { required },
-        sertifikat: {
+        pendidikan: { 
+            required, 
+            maxLength: maxLength(15)},
+        pekerjaan: {
             required,
-            maxLength: maxLength(100)
+            maxLength: maxLength(25)
+        },
+        alamat: {
+            required
+        },
+        kel: {
+            required,
+            maxLength: maxLength(25)
+        },
+        kec: {
+            required,
+            maxLength: maxLength(25)
+        },
+        kab: {
+            required,
+            maxLength: maxLength(25)
         }
     }
 })
 const v$ = useVuelidate(rules, payload)
 
-// const upsertHakim = async () => {
-//     let validation = await v$.value.$validate()
-//     if (validation) {
-//         HakimApi.upsert(payload)
-//             .then((res) => {
-//                 showHideModal()
-//                 let item = res.data
-//                 AlertSuccess({
-//                     text: item.message
-//                 })
-//             })
-//             .catch((err) => {
-//                 console.log(err)
-//             })
-//     }
-// }
+const upsertHakim = async () => {
+    let validation = await v$.value.$validate()
+    if (validation) {
+        ClientApi.upsert(payload)
+            .then((res) => {
+                showHideModal()
+                let item = res.data
+                AlertSuccess({
+                    text: item.message
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+}
 
 // ##########################################################
 // Edit data config
@@ -280,6 +420,29 @@ const diData = {
     label: 'label'
 }
 
+const disStatusOptions = [
+    { value: 'Pengugat', label: 'Pengugat' },
+    { value: 'Tergugat', label: 'Tergugat' },
+]
+
+const diStatus = {
+    value: 'value',
+    label: 'label'
+}
+
+const disAgamaOptions = [
+    { value: 'Islam', label: 'Islam' },
+    { value: 'Kristen', label: 'Kristen' },
+    { value: 'Protestan', label: 'Protestan' },
+    { value: 'Hindu', label: 'Hindu' },
+    { value: 'Budha', label: 'Budha' },
+]
+
+const diAgama = {
+    value: 'value',
+    label: 'label'
+}
+
 const myModal = ref(null)
 const showHideModal = (params) => {
     if (params && params.typeButton === 'new-data') {
@@ -309,7 +472,7 @@ const AlertSuccess = (options) => {
 }
 
 onMounted(() => {
-    // getHakimList()
+    getClientList()
     myModal.value = new Modal('#myModal', {
         keyboard: false
     })
