@@ -40,7 +40,7 @@
 									<tr v-for="(client, index) in searchField" class="text-uppercase">
 										<td class="align-top">{{ index + 1 }}.</td>
 										<td class="align-top">
-											<span class="fw-bold">{{ client.nama }}</span> <br>
+											<span class="fw-bold">{{ client.nama }} {{ client.marga }}</span> <br>
 											<div class="d-flex">
 												<div class="flex-fill text-capitalize">
 													<ul class="list-group mt-1">
