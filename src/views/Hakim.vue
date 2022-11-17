@@ -60,7 +60,7 @@
                                         <td class="align-top">{{ hakim.sertifikat }}</td>
                                         <td class="align-top">
                                             <BaseButtonVue class="btn-outline-primary btn-sm rounded"
-                                                @clickEvent="editHakim" :dataRows="hakimList[index]">EDIT
+                                                @clickEvent="editHakim" :dataRows="searchField[index]">EDIT
                                             </BaseButtonVue>
                                             <BaseButtonVue class="btn-outline-danger btn-sm rounded ms-2"
                                                 @clickEvent="deleteHakim" :dataId="hakim.id">HAPUS
@@ -90,7 +90,7 @@
                     <form class="pt-2 row" style="padding-bottom: 56px;">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="helpInputTop">Nama</label>
+                                <label for="">Nama</label>
                                 <BaseInputVue v-model="payload.nama" placeholder="Input here..." />
                                 <span v-for="error in v$.nama.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -99,7 +99,7 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="helpInputTop">Nip</label>
+                                <label for="">Nip</label>
                                 <BaseInputVue v-model="payload.nip" typeOf="number" placeholder="Input here..." />
                                 <span v-for="error in v$.nip.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -108,7 +108,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Tempat Lahir</label>
+                                <label for="">Tempat Lahir</label>
                                 <BaseInputVue v-model="payload.tempat_lahir" placeholder="Input here..." />
                                 <span v-for="error in v$.tempat_lahir.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -117,7 +117,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Tanggal Lahir</label>
+                                <label for="">Tanggal Lahir</label>
                                 <BaseInputVue v-model="payload.tgl_lahir" typeOf="date" placeholder="Input here..." />
                                 <span v-for="error in v$.tgl_lahir.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -126,7 +126,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Jabatan</label>
+                                <label for="">Jabatan</label>
                                 <BaseSelectVue v-model="payload.jabatan" :options="disJabatanOptions"
                                     :display="diJabatan" />
                                 <span v-for="error in v$.jabatan.$errors" :key="error.$uid">
@@ -136,7 +136,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Nomor Sertifikat</label>
+                                <label for="">Nomor Sertifikat</label>
                                 <BaseInputVue v-model="payload.sertifikat" placeholder="Input here..." />
                                 <span v-for="error in v$.sertifikat.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -276,7 +276,6 @@ const editHakim = (params) => {
     for (const key in params.dataRows) {
         payload[key] = params.dataRows[key]
     }
-    console.log(payload);
     showHideModal()
 }
 
