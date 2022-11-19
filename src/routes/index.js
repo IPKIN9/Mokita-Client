@@ -3,6 +3,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Hakim from '../views/Hakim.vue'
 import Client from '../views/Client.vue'
 import Gugatan from '../views/Gugatan.vue'
+import NotFound from '../error/NotFound.vue'
 
 const routes = [
   {
@@ -24,6 +25,10 @@ const routes = [
     path: '/gugatan',
     name: 'gugatan',
     component: Gugatan
+  },
+  {
+    path: '/:catchAll(.*)',
+    component: NotFound
   },
 ]
 

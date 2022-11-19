@@ -105,7 +105,7 @@
 											<BaseButtonVue @clickEvent="editGugatan" :dataRows="gugatanList[index]" class="btn-outline-primary btn-sm rounded px-3"
 												>EDIT
 											</BaseButtonVue>
-											<BaseButtonVue class="btn-outline-danger btn-sm rounded mt-2"
+											<BaseButtonVue @clickEvent="deleteGugatan" :dataId="gugat.id" class="btn-outline-danger btn-sm rounded mt-2"
 												>HAPUS
 											</BaseButtonVue>
 										</td>
@@ -374,28 +374,28 @@ const editGugatan = (params) => {
 
 // ##########################################################
 // Delete data config
-// const deleteClient = (params) => {
-// 	SweetAlert.alertConfirm({
-// 		title: 'Delete?',
-// 		confirmtext: 'Yes, Deleted it'
-// 	})
-// 		.then((res) => {
-// 			if (res.isConfirmed) {
-// 				if (searchField.value.length === 1 && meta.page != 0) {
-// 					search.value = ''
-// 					meta.page = meta.page - 1
-// 				}
-// 				GugatanApi.delete(params.dataId)
-// 					.then((res) => {
-// 						let item = res.data
-// 						AlertSuccess({ text: item.message })
-// 					})
-// 					.catch((err) => {
-// 						console.log(err)
-// 					})
-// 			}
-// 		})
-// }
+const deleteGugatan = (params) => {
+	SweetAlert.alertConfirm({
+		title: 'Delete?',
+		confirmtext: 'Yes, Deleted it'
+	})
+		.then((res) => {
+			if (res.isConfirmed) {
+				if (searchField.value.length === 1 && meta.page != 0) {
+					search.value = ''
+					meta.page = meta.page - 1
+				}
+				GugatanApi.delete(params.dataId)
+					.then((res) => {
+						let item = res.data
+						AlertSuccess({ text: item.message })
+					})
+					.catch((err) => {
+						console.log(err)
+					})
+			}
+		})
+}
 
 // ##########################################################
 // Extends funct
