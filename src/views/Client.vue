@@ -240,7 +240,7 @@ const meta = reactive({
 })
 
 const getClientList = () => {
-	ClientApi.getList(meta.limit, meta.page)
+	ClientApi.getList(meta.limit, meta.page, '', '')
 		.then((res) => {
 			let item = res.data
 

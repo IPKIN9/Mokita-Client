@@ -102,7 +102,7 @@
 											</div>
 										</td>
 										<td class="align-middle text-center">
-											<BaseButtonVue class="btn-outline-primary btn-sm rounded px-3"
+											<BaseButtonVue @clickEvent="editGugatan" :dataRows="gugatanList[index]" class="btn-outline-primary btn-sm rounded px-3"
 												>EDIT
 											</BaseButtonVue>
 											<BaseButtonVue class="btn-outline-danger btn-sm rounded mt-2"
@@ -131,11 +131,15 @@
 			<template v-slot:body>
 				<div class="modal-body">
 					<form class="pt-2 row" style="padding-bottom: 56px;">
-						<div class="col-lg-6 border-end border-1">
-							<div class="col-md-12">
+						<div class="col-lg-6 row">
+							<div class="col-md-12 mb-3">
 								<div class="form-group">
 									<label for="">Penggugat</label>
-									<BaseSelectVue v-model="payload.id_penggugat" :options="disPenggugatOptions" :display="diPenggugat" />
+									<BaseInputVue @keyup.stop="getClientList('penggugat')" v-model="searchName.penggugat" placeholder="Search here..."/>
+									<Transition>
+										<BaseSelectSearchVue v-show="disPenggugatOptions.length != 0" v-model="payload.id_penggugat" :options="disPenggugatOptions" 
+										:display="diGugat" @clickEvent="changeName" />
+									</Transition>
 									<span v-for="error in v$.id_penggugat.$errors" :key="error.$uid">
 										<small class="text-danger">field {{ error.$message }}.</small>
 									</span>
@@ -150,26 +154,125 @@
 									</span>
 								</div>
 							</div>
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label for="">Akta Nikah</label>
+									<BaseInputVue v-model="payload.akta_nikah" placeholder="Input here..." />
+									<span v-for="error in v$.akta_nikah.$errors" :key="error.$uid">
+										<small class="text-danger">field {{ error.$message }}.</small>
+									</span>
+								</div>
+							</div>
+							<div class="col-lg-12 mb-2">
+								<div class="form-group">
+									<label for="">Lama Pisah <small class="text-danger">satuan hari</small></label>
+									<BaseInputVue v-model="payload.lama_pisah" typeOf="number" placeholder="Input here..." />
+									<span v-for="error in v$.lama_pisah.$errors" :key="error.$uid">
+										<small class="text-danger">field {{ error.$message }}.</small>
+									</span>
+								</div>
+							</div>
+							<small class="text-muted">Detail</small>
+							<div class="col-lg-12 mt-3">
+								<BaseTextAreaVue v-model="payload.kec" label="Kecamatan" />
+								<span v-for="error in v$.kec.$errors" :key="error.$uid">
+									<small class="text-danger">field {{ error.$message }}.</small>
+								</span>
+							</div>
+							<div class="col-lg-12 mt-3">
+								<BaseTextAreaVue v-model="payload.kab" label="Kabupaten" />
+								<span v-for="error in v$.kab.$errors" :key="error.$uid">
+									<small class="text-danger">field {{ error.$message }}.</small>
+								</span>
+							</div>
+						</div>
+						<div class="col-lg-6 row">
+							<div class="col-md-12 mb-3">
+								<div class="form-group">
+									<label for="">Tergugat</label>
+									<BaseInputVue @keyup.stop="getClientList('tergugat')" v-model="searchName.tergugat" placeholder="Search here..."/>
+									<Transition>
+										<BaseSelectSearchVue v-show="disTergugatOptions.length != 0" v-model="payload.id_tergugat" :options="disTergugatOptions" 
+										:display="diGugat" @clickEvent="changeName" />
+									</Transition>
+									<span v-for="error in v$.id_penggugat.$errors" :key="error.$uid">
+										<small class="text-danger">field {{ error.$message }}.</small>
+									</span>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label for="">Tanggal Tidak Rukun</label>
+									<BaseInputVue v-model="payload.tgl_tidak_rukun" typeOf="date" placeholder="Input here..." />
+									<span v-for="error in v$.tgl_tidak_rukun.$errors" :key="error.$uid">
+										<small class="text-danger">field {{ error.$message }}.</small>
+									</span>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label for="">Puncak Konflik</label>
+									<BaseInputVue v-model="payload.puncak_konflik" typeOf="date" placeholder="Input here..." />
+									<span v-for="error in v$.puncak_konflik.$errors" :key="error.$uid">
+										<small class="text-danger">field {{ error.$message }}.</small>
+									</span>
+								</div>
+							</div>
+							<div class="col-lg-12 mb-2">
+								<div class="form-group">
+									<label for="">Penyebab</label>
+									<BaseInputVue v-model="payload.penyebab" placeholder="Input here..." />
+									<span v-for="error in v$.penyebab.$errors" :key="error.$uid">
+										<small class="text-danger">field {{ error.$message }}.</small>
+									</span>
+								</div>
+							</div>
+							<small class="text-muted">Tinggal</small>
+							<div class="col-lg-12 mt-3">
+								<BaseTextAreaVue v-model="payload.tinggal1" label="Tinggal Pertama Setelah Pisah" />
+								<span v-for="error in v$.tinggal1.$errors" :key="error.$uid">
+									<small class="text-danger">field {{ error.$message }}.</small>
+								</span>
+							</div>
+							<div class="col-lg-12 mt-3">
+								<BaseTextAreaVue v-model="payload.tinggal2" label="Tinggal Kedua Setelah Pisah" />
+								<span v-for="error in v$.tinggal2.$errors" :key="error.$uid">
+									<small class="text-danger">field {{ error.$message }}.</small>
+								</span>
+							</div>
 						</div>
 					</form>
 				</div>
 			</template>
 			<template v-slot:footer>
 				<BaseButtonVue @clickEvent="showHideModal" class="btn-danger rounded px-4">Cancel</BaseButtonVue>
-				<BaseButtonVue class="btn-primary rounded px-4 ms-2">Proses</BaseButtonVue>
+				<BaseButtonVue @clickEvent="upsertGugatan" class="btn-primary rounded px-4 ms-2">Proses</BaseButtonVue>
 			</template>
 		</BaseModalVue>
 	</div>
 </template>
+<style>
+	.v-enter-active,
+	.v-leave-active {
+	transition: opacity 0.3s ease;
+	}
+
+	.v-enter-from,
+	.v-leave-to {
+	opacity: 0;
+	}
+</style>
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
+import { required, maxLength, } from '@vuelidate/validators'
 import GugatanApi from '../utils/GugatanApi'
+import ClientApi from '../utils/ClientApi'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
 import BaseSelectVue from '../components/input/BaseSelect.vue'
+import BaseSelectSearchVue from '../components/input/BaseSelectSearch.vue'
 import BaseInputVue from '../components/input/BaseInput.vue'
 import BaseButtonVue from '../components/button/BaseButton.vue'
 import PaginationVue from '../components/Pagination.vue'
@@ -215,7 +318,7 @@ const payload = reactive({
 	tinggal2: '',
 	tgl_tidak_rukun: '',
 	penyebab: '',
-	pincak_konflik: '',
+	puncak_konflik: '',
 	lama_pisah: '',
 	kec: '',
 	kab: '',
@@ -239,31 +342,35 @@ const rules = computed(() => {
 })
 const v$ = useVuelidate(rules, payload)
 
-// const upsertClient = async () => {
-// 	let validation = await v$.value.$validate()
-// 	if (validation) {
-// 		GugatanApi.upsert(payload)
-// 			.then((res) => {
-// 				showHideModal()
-// 				let item = res.data
-// 				AlertSuccess({
-// 					text: item.message
-// 				})
-// 			})
-// 			.catch((err) => {
-// 				console.log(err)
-// 			})
-// 	}
-// }
+const upsertGugatan = async () => {
+	let validation = await v$.value.$validate()
+	if (validation) {
+		GugatanApi.upsert(payload)
+		.then((res) => {
+			showHideModal()
+			let item = res.data
+			AlertSuccess({
+				text: item.message
+			})
+		})
+		.catch((err) => {
+			console.log(err)
+		})
+	}
+}
 
 // ##########################################################
 // Edit data config
-// const editClient = (params) => {
-// 	for (const key in params.dataRows) {
-// 		payload[key] = params.dataRows[key]
-// 	}
-// 	showHideModal()
-// }
+const editGugatan = (params) => {
+	clearInput()
+	for (const key in params.dataRows) {
+		payload[key] = params.dataRows[key]
+	}
+	searchName.penggugat = params.dataRows['penggugat']
+	searchName.tergugat = params.dataRows['tergugat']
+
+	showHideModal()
+}
 
 // ##########################################################
 // Delete data config
@@ -334,13 +441,42 @@ const diData = {
 }
 
 const disPenggugatOptions = ref([])
+const disTergugatOptions = ref([])
 
-const diPenggugat = {
+const diGugat = {
 	value: 'id',
 	label: 'nama'
 }
 
-const searchClint = () => {}
+const searchName = reactive({
+	penggugat: '',
+	tergugat: ''
+})
+
+const getClientList = (status) => {
+	ClientApi.getList(100, 1, searchName[status], status)
+	.then((res) => {
+		let item = res.data
+		if (status === 'penggugat') {
+			disPenggugatOptions.value = item.data
+		} else {
+			disTergugatOptions.value = item.data
+		}
+	})
+	.catch((err) => {
+		console.log(err)
+	})
+}
+
+const changeName = (params) => {
+	if (params.status === "penggugat") {
+		searchName.penggugat = params.nama
+		disPenggugatOptions.value = []
+	} else if (params.status === "tergugat") {
+		searchName.tergugat = params.nama
+		disTergugatOptions.value = []
+	}
+}
 
 const myModal = ref(null)
 const showHideModal = (params) => {
@@ -356,8 +492,14 @@ const clearInput = () => {
 		for (const key in payload) {
 			payload[key] = ''
 		}
-		delete payload.id
 	}
+	searchName.penggugat = ''
+	searchName.tergugat = ''
+
+	disPenggugatOptions.value = []
+	disTergugatOptions.value = []
+
+	delete payload.id
 }
 
 const AlertSuccess = (options) => {
