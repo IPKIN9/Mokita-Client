@@ -33,7 +33,7 @@
 									<tr class="text-capitalize">
 										<th style="width: 4%;">no</th>
 										<th>profil</th>
-										<th style="width: 14%;">aksi</th>
+										<th style="width: 16%;">aksi</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -78,7 +78,7 @@
 									</tr>
 								</tbody>
 							</table>
-							<div v-if="clientList.length < 1" class="d-flex justify-content-center p-5">
+							<div v-if="searchField.length < 1" class="d-flex justify-content-center p-5">
 								<div class="fs-3 me-2"><i class="bi bi-emoji-laughing"></i></div>
 								<span class="fs-4 fw-bold text-secondary">Data not
 									exist</span>
@@ -240,7 +240,7 @@ const meta = reactive({
 })
 
 const getClientList = () => {
-	ClientApi.getList(meta.limit, meta.page)
+	ClientApi.getList(meta.limit, meta.page, '', '')
 		.then((res) => {
 			let item = res.data
 

@@ -37,7 +37,7 @@
                                         <th>jabatan</th>
                                         <th>pendidikan</th>
                                         <th>sertifikat</th>
-                                        <th style="width: 14%;">aksi</th>
+                                        <th style="width: 16%;">aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>

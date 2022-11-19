@@ -29,6 +29,11 @@
                         <BaseLinkVue label="Client" :to="{ name: 'client' }" class='sidebar-link'
                             icon="bi bi-people-fill" />
                     </li>
+
+                    <li :class="$route.name === 'gugatan' ? 'sidebar-item active' : 'sidebar-item'">
+                        <BaseLinkVue label="Gugatan" :to="{ name: 'gugatan' }" class='sidebar-link'
+                            icon="bi bi-file-earmark-text-fill" />
+                    </li>
                 </ul>
             </div>
             <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

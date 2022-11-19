@@ -1,11 +1,11 @@
 import Api from './Config.js'
 
 const baseUrl = import.meta.env.VITE_MOKITA_URL
-const endPoint = '/v1/client/'
+const endPoint = '/v1/gugatan/'
 
 export default{
-  getList(limit, page, nama, status) {
-    return Api(baseUrl).get(`${endPoint}?limit=${limit}&page=${page}&nama=${nama}&status=${status}`)
+  getList(limit, page) {
+    return Api(baseUrl).get(`${endPoint}?limit=${limit}&page=${page}`)
   },
 
   upsert(payload) {
