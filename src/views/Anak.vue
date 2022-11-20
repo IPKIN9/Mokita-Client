@@ -33,19 +33,19 @@
 									<tr class="text-capitalize">
 										<th style="width: 4%;">no</th>
 										<th>nama</th>
-										<th>tempat/tgl lahir</th>
+										<th style="width: 30%;">tempat/tgl lahir</th>
 										<th style="width: 16%;">aksi</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr class="text-capitalize" v-for="(anak, index) in anakList" :key="index">
+									<tr class="text-capitalize" v-for="(anak, index) in searchField" :key="index">
 										<td>{{index + 1}}.</td>
 										<td>{{anak.nama}}</td>
-										<td>{{moment(anak.tgl_lahir).format('DD MMMM, YYYY')}}</td>
+										<td>{{anak.tempat_lahir}}, {{moment(anak.tgl_lahir).format('DD MMMM, YYYY')}}</td>
 										<td>
-											<BaseButtonVue  class="btn-outline-primary btn-sm rounded">EDIT
+											<BaseButtonVue @clickEvent="editAnak" :dataRows="searchField[index]" class="btn-outline-primary btn-sm rounded">EDIT
 											</BaseButtonVue>
-											<BaseButtonVue class="btn-outline-danger btn-sm rounded ms-2">HAPUS
+											<BaseButtonVue @clickEvent="deleteAnak" :dataId="anak.id" class="btn-outline-danger btn-sm rounded ms-2">HAPUS
 											</BaseButtonVue>
 										</td>
 									</tr>
@@ -66,16 +66,37 @@
 			</section>
 		</div>
 		<FooterVue />
-		<BaseModalVue mdSize="modal-lg" idModal="myModal" mdTitle="Insert or update data">
+		<BaseModalVue mdSize="" idModal="myModal" mdTitle="Insert or update data">
 			<template v-slot:body>
 				<div class="modal-body">
 					<form class="pt-2 row" style="padding-bottom: 56px;">
+						<div class="form-group">
+							<label for="">Nama</label>
+							<BaseInputVue v-model="payload.nama" placeholder="Input here..." />
+							<span v-for="error in v$.nama.$errors" :key="error.$uid">
+								<small class="text-danger">field {{ error.$message }}.</small>
+							</span>
+						</div>
+						<div class="form-group mt-3">
+							<label for="">Tempat Lahir</label>
+							<BaseInputVue v-model="payload.tempat_lahir" placeholder="Input here..." />
+							<span v-for="error in v$.tempat_lahir.$errors" :key="error.$uid">
+								<small class="text-danger">field {{ error.$message }}.</small>
+							</span>
+						</div>
+						<div class="form-group mt-3">
+							<label for="">Tanggal Lahir</label>
+							<BaseInputVue v-model="payload.tgl_lahir" placeholder="Input here..." typeOf="date" />
+							<span v-for="error in v$.tgl_lahir.$errors" :key="error.$uid">
+								<small class="text-danger">field {{ error.$message }}.</small>
+							</span>
+						</div>
 					</form>
 				</div>
 			</template>
 			<template v-slot:footer>
 				<BaseButtonVue @clickEvent="showHideModal" class="btn-danger rounded px-4">Cancel</BaseButtonVue>
-				<BaseButtonVue class="btn-primary rounded px-4 ms-2">Proses</BaseButtonVue>
+				<BaseButtonVue @clickEvent="upsertAnak" class="btn-primary rounded px-4 ms-2">Proses</BaseButtonVue>
 			</template>
 		</BaseModalVue>
 	</div>
@@ -155,62 +176,65 @@ const rules = computed(() => {
 })
 const v$ = useVuelidate(rules, payload)
 
-// const upsertClient = async () => {
-// 	let validation = await v$.value.$validate()
-// 	if (validation) {
-// 		AnakApi.upsert(payload)
-// 			.then((res) => {
-// 				showHideModal()
-// 				let item = res.data
-// 				AlertSuccess({
-// 					text: item.message
-// 				})
-// 			})
-// 			.catch((err) => {
-// 				console.log(err)
-// 			})
-// 	}
-// }
+const upsertAnak = async () => {
+	let validation = await v$.value.$validate()
+	if (validation) {
+		AnakApi.upsert(payload)
+			.then((res) => {
+				showHideModal()
+				let item = res.data
+				AlertSuccess({
+					text: item.message
+				})
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+	}
+}
 
 // ##########################################################
 // Edit data config
-// const editClient = (params) => {
-// 	for (const key in params.dataRows) {
-// 		payload[key] = params.dataRows[key]
-// 	}
-// 	showHideModal()
-// }
+const editAnak = (params) => {
+	for (const key in params.dataRows) {
+		if (key === 'id_gugatan') {
+			continue
+		}
+		payload[key] = params.dataRows[key]
+	}
+	showHideModal()
+}
 
 // ##########################################################
 // Delete data config
-// const deleteClient = (params) => {
-// 	SweetAlert.alertConfirm({
-// 		title: 'Delete?',
-// 		confirmtext: 'Yes, Deleted it'
-// 	})
-// 		.then((res) => {
-// 			if (res.isConfirmed) {
-// 				if (searchField.value.length === 1 && meta.page != 0) {
-// 					search.value = ''
-// 					meta.page = meta.page - 1
-// 				}
-// 				AnakApi.delete(params.dataId)
-// 					.then((res) => {
-// 						let item = res.data
-// 						AlertSuccess({ text: item.message })
-// 					})
-// 					.catch((err) => {
-// 						console.log(err)
-// 					})
-// 			}
-// 		})
-// }
+const deleteAnak = (params) => {
+	SweetAlert.alertConfirm({
+		title: 'Delete?',
+		confirmtext: 'Yes, Deleted it'
+	})
+		.then((res) => {
+			if (res.isConfirmed) {
+				if (searchField.value.length === 1 && meta.page != 0) {
+					search.value = ''
+					meta.page = meta.page - 1
+				}
+				AnakApi.delete(params.dataId)
+					.then((res) => {
+						let item = res.data
+						AlertSuccess({ text: item.message })
+					})
+					.catch((err) => {
+						console.log(err)
+					})
+			}
+		})
+}
 
 // ##########################################################
 // Extends funct
 watch(meta, (newLimit) => {
 	if (newLimit.limit) {
-		// getAnakList()
+		getAnakList()
 	}
 })
 
@@ -221,7 +245,6 @@ const searchField = computed(() => {
 		const computedObj = {
 			...obj,
 			nama: obj.nama,
-			status: obj.status,
 		}
 		return Object.keys(computedObj)
 			.some(key => ('' + computedObj[key]).toLowerCase().includes(search.value.toLowerCase()))
@@ -234,7 +257,7 @@ const changePaging = (params) => {
 	} else {
 		meta.page = meta.page - 1
 	}
-	// getAnakList()
+	getAnakList()
 }
 
 const disDataOptions = [
@@ -260,18 +283,19 @@ const showHideModal = (params) => {
 const clearInput = () => {
 	v$.value.$reset()
 	for (const key in payload) {
-		for (const key in payload) {
-			payload[key] = ''
+		if (key === 'id_gugatan') {
+			continue
 		}
-		delete payload.id
+		payload[key] = ''
 	}
+	delete payload.id
 }
 
 const AlertSuccess = (options) => {
 	SweetAlert.alertSuccess(options.text)
 		.then((res) => {
 			if (res.isConfirmed) {
-				// getAnakList()
+				getAnakList()
 				clearInput()
 			}
 		})
