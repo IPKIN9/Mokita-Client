@@ -87,6 +87,10 @@
 													<div class="col-lg-5 fw-bold text-uppercase text-muted">Kecamatan</div>
 													<div class="col-lg-7">: {{gugat.kec}}</div>
 												</div>
+												<div class="row">
+													<div class="col-lg-5 fw-bold text-uppercase text-muted">Kabupaten</div>
+													<div class="col-lg-7">: {{gugat.kab}}</div>
+												</div>
 											</div>
 											<div class="col-lg-6">
 												<div class="row mt-1">
@@ -94,11 +98,8 @@
 													<div class="col-lg-7">: {{gugat.tinggal2}}</div>
 												</div>
 											</div>
-											<div class="col-lg-6 mt-4">
-												<div class="row">
-													<div class="col-lg-5 fw-bold text-uppercase text-muted">Kabupaten</div>
-													<div class="col-lg-7">: {{gugat.kab}}</div>
-												</div>
+											<div class="col-lg-6">
+												<BaseLink :to="{name: 'anak', query: {id_gugatan: gugat.id}}" class="btn btn-info rounded" label="Anak List" />
 											</div>
 										</td>
 										<td class="align-middle text-center">
@@ -280,6 +281,7 @@ import BaseModalVue from '../components/BaseModal.vue'
 import BaseTextAreaVue from '../components/input/BaseTextArea.vue'
 import SweetAlert from '../utils/SweetAlert'
 import moment from 'moment'
+import BaseLink from '../components/button/BaseLink.vue'
 
 // ##########################################################
 // Get data config
