@@ -32,7 +32,7 @@
 								<thead class="thead-dark">
 									<tr class="text-capitalize">
 										<th style="width: 4%;">no</th>
-										<td style="width: 30%;">Keterangan</td>
+										<th style="width: 30%;">Keterangan</th>
 										<th>Sidang Dimulai</th>
 										<th>Sidang Berakhir</th>
 										<th style="width: 16%;">aksi</th>

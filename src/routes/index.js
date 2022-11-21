@@ -5,6 +5,7 @@ import Client from '../views/Client.vue'
 import Gugatan from '../views/Gugatan.vue'
 import Anak from '../views/Anak.vue'
 import JadwalSidang from '../views/JadwalSidang.vue'
+import Perkara from '../views/Perkara.vue'
 import NotFound from '../error/NotFound.vue'
 
 const routes = [
@@ -37,6 +38,11 @@ const routes = [
     path: '/sidang',
     name: 'sidang',
     component: JadwalSidang
+  },
+  {
+    path: '/perkara',
+    name: 'perkara',
+    component: Perkara
   },
   {
     path: '/:catchAll(.*)',

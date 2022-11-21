@@ -37,7 +37,12 @@
 
                     <li :class="$route.name === 'sidang' ? 'sidebar-item active' : 'sidebar-item'">
                         <BaseLinkVue label="Jadwal Sidang" :to="{ name: 'sidang' }" class='sidebar-link'
-                            icon="bi bi-people-fill" />
+                            icon="bi bi-calendar-date" />
+                    </li>
+
+                    <li :class="$route.name === 'perkara' ? 'sidebar-item active' : 'sidebar-item'">
+                        <BaseLinkVue label="Perkara" :to="{ name: 'perkara' }" class='sidebar-link'
+                            icon="bi bi-file-earmark-person-fill" />
                     </li>
                 </ul>
             </div>
