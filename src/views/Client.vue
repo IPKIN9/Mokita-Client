@@ -23,7 +23,11 @@
 						<div class="col-lg-1">
 							<BaseSelectVue v-model.number="meta.limit" :options="disDataOptions" :display="diData" />
 						</div>
-						<label class="col-lg-8 py-2">Data Tampil</label>
+						<label class="col-lg-2 py-2">Data Tampil</label>
+						<div class="col-lg-2">
+							<BaseSelectVue v-model="filter" @change="changeFilter" :options="disFilterOptions" :display="diStatus" />
+						</div>
+						<label class="col-lg-4 py-2">Filter status</label>
 						<BaseInputVue v-model="search" class="col" placeholder="Search..." />
 					</div>
 					<div class="card-body rounded">
@@ -232,6 +236,7 @@ import moment from 'moment'
 // ##########################################################
 // Get data config
 const clientList = ref([])
+const filter = ref('')
 const meta = reactive({
 	limit: 10,
 	page: 1,
@@ -240,7 +245,7 @@ const meta = reactive({
 })
 
 const getClientList = () => {
-	ClientApi.getList(meta.limit, meta.page, '', '')
+	ClientApi.getList(meta.limit, meta.page, '', filter.value)
 		.then((res) => {
 			let item = res.data
 
@@ -424,6 +429,13 @@ const disStatusOptions = [
 	{ value: 'tergugat', label: 'Tergugat' },
 ]
 
+
+const disFilterOptions = [
+	{ value: '', label: 'All' },
+	{ value: 'penggugat', label: 'Penggugat' },
+	{ value: 'tergugat', label: 'Tergugat' },
+]
+
 const diStatus = {
 	value: 'value',
 	label: 'label'
@@ -440,6 +452,10 @@ const disAgamaOptions = [
 const diAgama = {
 	value: 'value',
 	label: 'label'
+}
+
+const changeFilter = () => {
+	getClientList()
 }
 
 const myModal = ref(null)

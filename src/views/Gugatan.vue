@@ -294,7 +294,7 @@ const meta = reactive({
 })
 
 const getGugatanList = () => {
-	GugatanApi.getList(meta.limit, meta.page)
+	GugatanApi.getList(meta.limit, meta.page, '')
 		.then((res) => {
 			let item = res.data
 

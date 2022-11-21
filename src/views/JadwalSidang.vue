@@ -137,7 +137,7 @@ const meta = reactive({
 })
 
 const getJadwalList = () => {
-	JadwalApi.getList(meta.limit, meta.page, '', '')
+	JadwalApi.getList(meta.limit, meta.page, '')
 		.then((res) => {
 			let item = res.data
 

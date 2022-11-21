@@ -192,7 +192,7 @@ const meta = reactive({
 })
 
 const getHakimList = () => {
-    HakimApi.getList(meta.limit, meta.page)
+    HakimApi.getList(meta.limit, meta.page, '')
         .then((res) => {
             let item = res.data
 
