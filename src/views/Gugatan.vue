@@ -37,7 +37,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="(gugat, index) in gugatanList" class="text-capitalize">
+									<tr v-for="(gugat, index) in searchField" class="text-capitalize">
 										<td class="align-top">{{index + 1}}.</td>
 										<td class="align-top row">
 											<div class="col-lg-6">Data client
@@ -87,6 +87,10 @@
 													<div class="col-lg-5 fw-bold text-uppercase text-muted">Kecamatan</div>
 													<div class="col-lg-7">: {{gugat.kec}}</div>
 												</div>
+												<div class="row">
+													<div class="col-lg-5 fw-bold text-uppercase text-muted">Kabupaten</div>
+													<div class="col-lg-7">: {{gugat.kab}}</div>
+												</div>
 											</div>
 											<div class="col-lg-6">
 												<div class="row mt-1">
@@ -94,15 +98,12 @@
 													<div class="col-lg-7">: {{gugat.tinggal2}}</div>
 												</div>
 											</div>
-											<div class="col-lg-6 mt-4">
-												<div class="row">
-													<div class="col-lg-5 fw-bold text-uppercase text-muted">Kabupaten</div>
-													<div class="col-lg-7">: {{gugat.kab}}</div>
-												</div>
+											<div class="col-lg-6">
+												<BaseLink :to="{name: 'anak', query: {id_gugatan: gugat.id}}" class="btn btn-info rounded" label="Anak List" />
 											</div>
 										</td>
 										<td class="align-middle text-center">
-											<BaseButtonVue @clickEvent="editGugatan" :dataRows="gugatanList[index]" class="btn-outline-primary btn-sm rounded px-3"
+											<BaseButtonVue @clickEvent="editGugatan" :dataRows="searchField[index]" class="btn-outline-primary btn-sm rounded px-3"
 												>EDIT
 											</BaseButtonVue>
 											<BaseButtonVue @clickEvent="deleteGugatan" :dataId="gugat.id" class="btn-outline-danger btn-sm rounded mt-2"
@@ -280,6 +281,7 @@ import BaseModalVue from '../components/BaseModal.vue'
 import BaseTextAreaVue from '../components/input/BaseTextArea.vue'
 import SweetAlert from '../utils/SweetAlert'
 import moment from 'moment'
+import BaseLink from '../components/button/BaseLink.vue'
 
 // ##########################################################
 // Get data config
@@ -411,8 +413,8 @@ const searchField = computed(() => {
 	return gugatanList.value.filter((obj) => {
 		const computedObj = {
 			...obj,
-			nama: obj.nama,
-			status: obj.status,
+			penggugat: obj.penggugat,
+			tergugat: obj.tergugat,
 		}
 		return Object.keys(computedObj)
 			.some(key => ('' + computedObj[key]).toLowerCase().includes(search.value.toLowerCase()))
@@ -489,9 +491,7 @@ const showHideModal = (params) => {
 const clearInput = () => {
 	v$.value.$reset()
 	for (const key in payload) {
-		for (const key in payload) {
-			payload[key] = ''
-		}
+		payload[key] = ''
 	}
 	searchName.penggugat = ''
 	searchName.tergugat = ''

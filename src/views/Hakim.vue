@@ -368,11 +368,9 @@ const showHideModal = (params) => {
 const clearInput = () => {
     v$.value.$reset()
     for (const key in payload) {
-        for (const key in payload) {
-            payload[key] = ''
-        }
-        delete payload.id
+        payload[key] = ''
     }
+    delete payload.id
 }
 
 const AlertSuccess = (options) => {
