@@ -264,11 +264,13 @@
 	}
 </style>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, maxLength, } from '@vuelidate/validators'
 import GugatanApi from '../utils/GugatanApi'
 import ClientApi from '../utils/ClientApi'
+import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from 'vue-router'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -285,6 +287,7 @@ import BaseLink from '../components/button/BaseLink.vue'
 
 // ##########################################################
 // Get data config
+const router = useRouter()
 const gugatanList = ref([])
 const meta = reactive({
 	limit: 10,
@@ -305,7 +308,8 @@ const getGugatanList = () => {
 			meta.total = item.meta.total
 		})
 		.catch((err) => {
-			console.log(err);
+			let code = err.response.status
+    		errorHandle(code)
 		})
 }
 
@@ -356,7 +360,8 @@ const upsertGugatan = async () => {
 			})
 		})
 		.catch((err) => {
-			console.log(err)
+			let code = err.response.status
+    		errorHandle(code)
 		})
 	}
 }
@@ -393,7 +398,8 @@ const deleteGugatan = (params) => {
 						AlertSuccess({ text: item.message })
 					})
 					.catch((err) => {
-						console.log(err)
+						let code = err.response.status
+    					errorHandle(code)
 					})
 			}
 		})
@@ -466,7 +472,8 @@ const getClientList = (status) => {
 		}
 	})
 	.catch((err) => {
-		console.log(err)
+		let code = err.response.status
+		errorHandle(code)
 	})
 }
 
@@ -511,6 +518,20 @@ const AlertSuccess = (options) => {
 			}
 		})
 }
+
+const errorHandle = (code) => {
+    SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()))
+}
+
+const goToLogin = () => {
+    router.replace('/login')
+}
+
+onBeforeMount(() => {
+    if (AuthCheck.checkToken() === 401) {
+        goToLogin()
+    }
+})
 
 onMounted(() => {
 	getGugatanList()

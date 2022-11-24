@@ -166,10 +166,12 @@
     </div>
 </template>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, handleError, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
 import HakimApi from '../utils/HakimApi'
+import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from 'vue-router'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -183,6 +185,7 @@ import SweetAlert from '../utils/SweetAlert'
 
 // ##########################################################
 // Get data config
+const router = useRouter()
 const hakimList = ref([])
 const meta = reactive({
     limit: 10,
@@ -203,7 +206,8 @@ const getHakimList = () => {
             meta.total = item.meta.total
         })
         .catch((err) => {
-            console.log(err);
+            let code = err.response.status
+            errorHandle(code)
         })
 }
 
@@ -265,7 +269,8 @@ const upsertHakim = async () => {
                 })
             })
             .catch((err) => {
-                console.log(err)
+                let code = err.response.status
+                errorHandle(code)
             })
     }
 }
@@ -298,7 +303,8 @@ const deleteHakim = (params) => {
                         AlertSuccess({ text: item.message })
                     })
                     .catch((err) => {
-                        console.log(err)
+                        let code = err.response.status
+                        errorHandle(code)
                     })
             }
         })
@@ -382,6 +388,20 @@ const AlertSuccess = (options) => {
             }
         })
 }
+
+const errorHandle = (code) => {
+    SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()))
+}
+
+const goToLogin = () => {
+    router.replace('/login')
+}
+
+onBeforeMount(() => {
+    if (AuthCheck.checkToken() === 401) {
+        goToLogin()
+    }
+})
 
 onMounted(() => {
     getHakimList()

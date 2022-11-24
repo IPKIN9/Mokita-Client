@@ -109,10 +109,12 @@
 	</div>
 </template>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import JadwalApi from '../utils/JadwalApi'
+import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from 'vue-router'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -128,6 +130,7 @@ import moment from 'moment'
 
 // ##########################################################
 // Get data config
+const router = useRouter()
 const jadwalList = ref([])
 const meta = reactive({
 	limit: 10,
@@ -148,7 +151,8 @@ const getJadwalList = () => {
 			meta.total = item.meta.total
 		})
 		.catch((err) => {
-			console.log(err);
+			let code = err.response.status
+    		errorHandle(code)
 		})
 }
 
@@ -189,7 +193,8 @@ const upsertJadwal = async () => {
 				})
 			})
 			.catch((err) => {
-				console.log(err)
+				let code = err.response.status
+    			errorHandle(code)
 			})
 	}
 }
@@ -222,7 +227,8 @@ const deleteJadwal = (params) => {
 						AlertSuccess({ text: item.message })
 					})
 					.catch((err) => {
-						console.log(err)
+						let code = err.response.status
+						errorHandle(code)
 					})
 			}
 		})
@@ -296,6 +302,20 @@ const AlertSuccess = (options) => {
 			}
 		})
 }
+
+const errorHandle = (code) => {
+    SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()))
+}
+
+const goToLogin = () => {
+    router.replace('/login')
+}
+
+onBeforeMount(() => {
+    if (AuthCheck.checkToken() === 401) {
+        goToLogin()
+    }
+})
 
 onMounted(() => {
 	getJadwalList()

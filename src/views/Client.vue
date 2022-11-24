@@ -217,10 +217,12 @@
 	</div>
 </template>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
+import { required, maxLength, helpers } from '@vuelidate/validators'
 import ClientApi from '../utils/ClientApi'
+import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from 'vue-router'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -235,6 +237,7 @@ import moment from 'moment'
 
 // ##########################################################
 // Get data config
+const router = useRouter()
 const clientList = ref([])
 const filter = ref('')
 const meta = reactive({
@@ -256,7 +259,8 @@ const getClientList = () => {
 			meta.total = item.meta.total
 		})
 		.catch((err) => {
-			console.log(err);
+			let code = err.response.status
+    		errorHandle(code)
 		})
 }
 
@@ -342,7 +346,8 @@ const upsertClient = async () => {
 				})
 			})
 			.catch((err) => {
-				console.log(err)
+				let code = err.response.status
+    			errorHandle(code)
 			})
 	}
 }
@@ -375,7 +380,8 @@ const deleteClient = (params) => {
 						AlertSuccess({ text: item.message })
 					})
 					.catch((err) => {
-						console.log(err)
+						let code = err.response.status
+    					errorHandle(code)
 					})
 			}
 		})
@@ -483,6 +489,20 @@ const AlertSuccess = (options) => {
 			}
 		})
 }
+
+const errorHandle = (code) => {
+    SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()))
+}
+
+const goToLogin = () => {
+    router.replace('/login')
+}
+
+onBeforeMount(() => {
+    if (AuthCheck.checkToken() === 401) {
+        goToLogin()
+    }
+})
 
 onMounted(() => {
 	getClientList()

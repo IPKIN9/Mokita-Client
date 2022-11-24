@@ -184,13 +184,15 @@
 	}
 </style>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
 import PerkaraApi from '../utils/PerkaraApi'
 import HakimApi from '../utils/HakimApi'
 import JadwalApi from '../utils/JadwalApi'
 import GugatanApi from '../utils/GugatanApi'
+import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from 'vue-router'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -206,6 +208,7 @@ import moment from 'moment'
 
 // ##########################################################
 // Get data config
+const router = useRouter()
 const perkaraList = ref([])
 const meta = reactive({
 	limit: 10,
@@ -226,7 +229,8 @@ const getPerkaraList = () => {
 			meta.total = item.meta.total
 		})
 		.catch((err) => {
-			console.log(err);
+			let code = err.response.status
+    		errorHandle(code)
 		})
 }
 
@@ -284,7 +288,8 @@ const upsertPerkara = async () => {
 				})
 			})
 			.catch((err) => {
-				console.log(err)
+				let code = err.response.status
+    			errorHandle(code)
 			})
 	}
 }
@@ -320,7 +325,8 @@ const deletePerkara = (params) => {
 						AlertSuccess({ text: item.message })
 					})
 					.catch((err) => {
-						console.log(err)
+						let code = err.response.status
+    					errorHandle(code)
 					})
 			}
 		})
@@ -397,7 +403,8 @@ const getHakimList = () => {
 			disHakimOptions.value = item.data
 		})
 		.catch((err) => {
-			console.log(err)
+			let code = err.response.status
+			errorHandle(code)
 		})
 	} else {
 		disHakimOptions.value = []
@@ -412,7 +419,8 @@ const getGugatanList = () => {
 			disGugatanOptions.value = item.data
 		})
 		.catch((err) => {
-			console.log(err)
+			let code = err.response.status
+    		errorHandle(code)
 		})
 	} else {
 		disGugatanOptions.value = []
@@ -427,7 +435,8 @@ const getJadwalList = () => {
 			disJadwalOptions.value = item.data
 		})
 		.catch((err) => {
-			console.log(err)
+			let code = err.response.status
+    		errorHandle(code)
 		})
 	} else {
 		disJadwalOptions.value = []
@@ -479,6 +488,20 @@ const AlertSuccess = (options) => {
 			}
 		})
 }
+
+const errorHandle = (code) => {
+    SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()))
+}
+
+const goToLogin = () => {
+    router.replace('/login')
+}
+
+onBeforeMount(() => {
+    if (AuthCheck.checkToken() === 401) {
+        goToLogin()
+    }
+})
 
 onMounted(() => {
 	getPerkaraList()
