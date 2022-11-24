@@ -34,7 +34,10 @@
                 <i class="bi bi-shield-lock"></i>
               </div>
             </div>
-            <button @click="login" class="btn btn-primary btn-block btn-lg shadow-lg mt-5">
+            <button v-if="loading" disabled class="btn btn-secondary btn-block btn-lg shadow-lg mt-5">
+              Loading ...
+            </button>
+            <button v-else @click="login" class="btn btn-primary btn-block btn-lg shadow-lg mt-5">
               Log in
             </button>
         </div>
@@ -83,30 +86,60 @@ body {
 }
 </style>
 <script setup>
-  import { onBeforeMount, reactive } from 'vue';
+  import { onBeforeMount, reactive, ref } from 'vue';
   import Login from '../utils/Login'
   import { useRouter } from 'vue-router'
   import AuthCheck from '../utils/AuthCheck'
+  import GetRole from '../utils/GetRole'
+  import CryptoJS from 'crypto-js'
 
-  const grantToken = import.meta.env.VITE_GRANT_TOKEN
+  const loading = ref(false)
+  const grantSecret = import.meta.env.VITE_GRANT_SECRET
+  const grantId = import.meta.env.VITE_GRANT_ID
+  const grantType = import.meta.env.VITE_GRANT_TYPE
 
   const router = useRouter()
   const payload = reactive({
-    client_secret: grantToken,
-    grant_type:"password",
-    client_id: 2,
+    client_secret: grantSecret,
+    grant_type:grantType,
+    client_id: parseInt(grantId),
     username: '',
-    password: ''
+    password: '',
+    scope: ''
   })
   
   const login = () => {
+    loading.value = true
+    GetRole.getList(payload.username)
+    .then((res) => {
+      let role = res.data.data.role
+      payload.scope = role
+
+      let roleEncrypt = CryptoJS.AES.encrypt(
+        role,
+        grantSecret
+      ).toString()
+
+      localStorage.setItem('roles', roleEncrypt)
+
+      getToken()
+    })
+    .catch((err) => {
+      loading.value = false
+      console.log(err)
+    })
+  }
+
+  const getToken = () => {
     Login.GetToken(payload)
     .then((res) => {
+      loading.value = false
       let item = res.data
       localStorage.setItem('user', item.access_token)
       router.replace('/')
     })
     .catch((err) => {
+      loading.value = false
       console.log(err)
     })
   }

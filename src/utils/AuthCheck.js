@@ -1,3 +1,6 @@
+import CryptoJS from 'crypto-js'
+
+const grantSecret = import.meta.env.VITE_GRANT_SECRET
 
 export default {
     userToken(){
@@ -21,10 +24,21 @@ export default {
     checkToken(code, callback){
         if (code === 401) {
             localStorage.removeItem('user')
+            localStorage.removeItem('roles')
             callback
             return 'Sesi login telah kadarluasa'
         } else {
             return 'Ada yang salah'
         }
+    },
+
+    rolesCheck(){
+        let roleEncrypt = localStorage.getItem("roles")
+        let roleDecrypt = CryptoJS.AES.decrypt(
+            roleEncrypt,
+            grantSecret
+        ).toString(CryptoJS.enc.Utf8)
+
+        return roleDecrypt
     }
 }

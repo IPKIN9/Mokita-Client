@@ -131,7 +131,7 @@ const goToLogin = () => {
 }
 
 onBeforeMount(() => {
-    if (AuthCheck.checkToken() === 401) {
+    if (AuthCheck.checkToken() === 401 || AuthCheck.checkToken() === 403) {
         goToLogin()
     }
 })
