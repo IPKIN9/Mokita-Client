@@ -12,7 +12,7 @@
 					<div class="col-10">
 						<h3>Jadwal Sidang</h3>
 					</div>
-					<BaseButtonVue @clickEvent="showHideModal" typeButton="new-data" class="btn-primary rounded col-2">
+					<BaseButtonVue v-if="crudList" @clickEvent="showHideModal" typeButton="new-data" class="btn-primary rounded col-2">
 						Tambah Data
 					</BaseButtonVue>
 				</div>
@@ -35,7 +35,7 @@
 										<th style="width: 30%;">Keterangan</th>
 										<th>Sidang Dimulai</th>
 										<th>Sidang Berakhir</th>
-										<th style="width: 16%;">aksi</th>
+										<th v-if="crudList" style="width: 16%;">aksi</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -44,7 +44,7 @@
 										<td>{{sidang.ket}}</td>
 										<td>{{moment(sidang.tgl_waktu_mulai).format('DD MMMM, YYYY | h:mm:ss a')}}</td>
 										<td>{{moment(sidang.tgl_waktu_berakhir).format('DD MMMM, YYYY | h:mm:ss a')}}</td>
-										<td>
+										<td v-if="crudList">
 											<BaseButtonVue @clickEvent="editJadwal" class="btn-outline-primary btn-sm rounded"
 												:dataRows="searchField[index]">EDIT
 											</BaseButtonVue>
@@ -127,6 +127,18 @@ import BaseModalVue from '../components/BaseModal.vue'
 import BaseTextAreaVue from '../components/input/BaseTextArea.vue'
 import SweetAlert from '../utils/SweetAlert'
 import moment from 'moment'
+
+// ##########################################################
+// Check credential
+const crudList = ref(true);
+const checkRole = () => {
+	let roles = AuthCheck.rolesCheck()
+	if (roles === 'crud-list') {
+		crudList.value = true
+	} else if (roles === 'see-list') {
+		crudList.value = false
+	}
+}
 
 // ##########################################################
 // Get data config
@@ -315,6 +327,7 @@ onBeforeMount(() => {
     if (AuthCheck.checkToken() === 401) {
         goToLogin()
     }
+	checkRole()
 })
 
 onMounted(() => {

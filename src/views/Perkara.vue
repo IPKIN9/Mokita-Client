@@ -12,7 +12,7 @@
 					<div class="col-10">
 						<h3>Perkara</h3>
 					</div>
-					<BaseButtonVue @clickEvent="showHideModal" typeButton="new-data" class="btn-primary rounded col-2">
+					<BaseButtonVue v-if="crudList" @clickEvent="showHideModal" typeButton="new-data" class="btn-primary rounded col-2">
 						Tambah Data
 					</BaseButtonVue>
 				</div>
@@ -34,7 +34,7 @@
 										<th style="width: 4%;">no</th>
 										<th>detail</th>
 										<th style="width: 23%;">jadwal</th>
-										<th style="width: 16%;">aksi</th>
+										<th v-if="crudList" style="width: 16%;">aksi</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -78,7 +78,7 @@
 												<span>{{moment(perkara.tgl_selesai_sidang).format('DD MMMM, YYYY | hh:mm')}}</span>
 											</ul>
 										</td>
-										<td class="align-middle">
+										<td v-if="crudList" class="align-middle">
 											<BaseButtonVue @clickEvent="editPerkara" class="btn-outline-primary btn-sm rounded"
 												:dataRows="searchField[index]">EDIT
 											</BaseButtonVue>
@@ -205,6 +205,17 @@ import BaseModalVue from '../components/BaseModal.vue'
 import BaseTextAreaVue from '../components/input/BaseTextArea.vue'
 import SweetAlert from '../utils/SweetAlert'
 import moment from 'moment'
+// ##########################################################
+// Check role
+const crudList = ref(true);
+const checkRole = () => {
+	let roles = AuthCheck.rolesCheck()
+	if (roles === 'crud-list') {
+		crudList.value = true
+	} else if (roles === 'see-list') {
+		crudList.value = false
+	}
+}
 
 // ##########################################################
 // Get data config
@@ -501,6 +512,7 @@ onBeforeMount(() => {
     if (AuthCheck.checkToken() === 401) {
         goToLogin()
     }
+	checkRole()
 })
 
 onMounted(() => {

@@ -6,7 +6,7 @@
                 <div class="text-center">
                     <h1 class="error-title">NOT FOUND</h1>
                     <p class='fs-5 text-gray-600'>The page you are looking not found.</p>
-                    <a href="index.html" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    <router-link :to="{name: 'dashboard'}" class="btn btn-lg btn-outline-primary mt-3">Go Home</router-link>
                 </div>
             </div>
         </div>
@@ -15,3 +15,6 @@
 <style>
     #error{height:100vh;background-color:#ebf3ff;padding-top:5rem}#error .img-error{width:100%}#error .error-title{font-size:4rem;margin-top:3rem}
 </style>
+<script>
+    
+</script>
