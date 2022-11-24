@@ -13,20 +13,34 @@ import utils from '../utils/AuthCheck'
 const adminGuard = (to, from, next) => {
   let scope = utils.rolesCheck()
 
-  if(scope === 'crud-list'){
-    next()
-  } else {
-    next('/404_not_found')
+  if(scope) {
+    if(scope === 'crud-list'){
+      next()
+    } else {
+      next('/404_not_found')
+    }
+  }
+  else {
+    localStorage.removeItem('user')
+    localStorage.removeItem('roles')
+    next('/login')
   }
 }
 
 const staffGuard = (to, from, next) => {
   let scope = utils.rolesCheck()
 
-  if(scope === 'crud-list' || 'crud-list'){
-    next()
-  } else {
-    next('/404_not_found')
+  if(scope) {
+    if(scope === 'crud-list' || scope === 'see-list'){
+      next()
+    } else {
+      next('/404_not_found')
+    }
+  }
+  else {
+    localStorage.removeItem('user')
+    localStorage.removeItem('roles')
+    next('/login')
   }
 }
 
@@ -34,7 +48,7 @@ const routes = [
   {
     path: '/',
     name: 'dashboard',
-    beforeEnter: adminGuard,
+    beforeEnter: staffGuard,
     component: Dashboard
   },
   {

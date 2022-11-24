@@ -33,12 +33,14 @@ export default {
     },
 
     rolesCheck(){
-        let roleEncrypt = localStorage.getItem("roles")
-        let roleDecrypt = CryptoJS.AES.decrypt(
-            roleEncrypt,
-            grantSecret
-        ).toString(CryptoJS.enc.Utf8)
-
-        return roleDecrypt
+        let roleEncrypt = localStorage.getItem("roles") || null
+        if (roleEncrypt) {
+            let roleDecrypt = CryptoJS.AES.decrypt(
+                roleEncrypt,
+                grantSecret
+            ).toString(CryptoJS.enc.Utf8)
+            return roleDecrypt
+        }
+        return roleEncrypt
     }
 }
