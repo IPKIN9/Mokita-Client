@@ -234,7 +234,7 @@ const meta = reactive({
 })
 
 const getPerkaraList = () => {
-	PerkaraApi.getList(meta.limit, meta.page, '', '')
+	PerkaraApi.getList(meta.limit, meta.page, '')
 		.then((res) => {
 			let item = res.data
 
@@ -247,6 +247,7 @@ const getPerkaraList = () => {
 		.catch((err) => {
 			let code = err.response.status
     		errorHandle(code)
+			console.log(err)
 		})
 }
 

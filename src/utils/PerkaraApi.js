@@ -5,8 +5,8 @@ const baseUrl = import.meta.env.VITE_MOKITA_URL
 const endPoint = '/v1/perkara/'
 
 export default{
-  getList(limit, page, nama, status) {
-    return Api(baseUrl).get(`${endPoint}?limit=${limit}&page=${page}&nama=${nama}&status=${status}`, AuthCheck.getToken())
+  getList(limit, page, search) {
+    return Api(baseUrl).get(`${endPoint}?limit=${limit}&page=${page}&search=${search}`, AuthCheck.getToken())
   },
 
   upsert(payload) {
