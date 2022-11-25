@@ -5,13 +5,10 @@
         <div id="auth-left">
           <div class="auth-logo">
             <a href="#"
-              ><img src="src/assets/images/logo/logo.png" alt="Logo"
+              ><img src="src/assets/images/logo/logo.png" alt="Logo" style="height: 60px; width: auto;"
             /></a>
           </div>
           <h1 class="auth-title">Log in.</h1>
-          <p class="auth-subtitle mb-5">
-            Log in with your data that you entered during registration.
-          </p>
             <div class="form-group position-relative has-icon-left mb-4">
               <input
                 v-model="payload.username"
@@ -74,10 +71,10 @@ body {
   color: #a8aebb;
 }
 #auth #auth-left .auth-logo {
-  margin-bottom: 7rem;
+  margin-bottom: 4rem;
 }
 #auth #auth-left .auth-logo img {
-  height: 2rem;
+  height: 1.8rem;
 }
 @media screen and (max-width: 767px) {
   #auth #auth-left {

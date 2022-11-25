@@ -2,9 +2,9 @@
     <div id="sidebar" class="active">
         <div class="sidebar-wrapper active">
             <div class="sidebar-header">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-beetwen">
                     <div class="logo">
-                        <a href="#"><img src="src/assets/images/logo/logo.png" alt="Logo" srcset=""></a>
+                        <a href="#"><img src="src/assets/images/logo/logo.png" alt="Logo" srcset="" style="height: 50px; width: auto;"></a>
                     </div>
                     <div class="toggler">
                         <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
