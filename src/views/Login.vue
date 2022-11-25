@@ -5,7 +5,7 @@
         <div id="auth-left">
           <div class="auth-logo">
             <a href="#"
-              ><img src="src/assets/images/logo/logo.png" alt="Logo" style="height: 60px; width: auto;"
+              ><img :src="logo" alt="Logo" style="height: 60px; width: auto;"
             /></a>
           </div>
           <h1 class="auth-title">Log in.</h1>
@@ -89,6 +89,7 @@ body {
   import AuthCheck from '../utils/AuthCheck'
   import GetRole from '../utils/GetRole'
   import CryptoJS from 'crypto-js'
+  import logo from '../assets/images/logo/logo.png'
 
   const loading = ref(false)
   const grantSecret = import.meta.env.VITE_GRANT_SECRET

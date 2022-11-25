@@ -4,7 +4,7 @@
             <div class="sidebar-header">
                 <div class="d-flex justify-content-beetwen">
                     <div class="logo">
-                        <a href="#"><img src="src/assets/images/logo/logo.png" alt="Logo" srcset="" style="height: 50px; width: auto;"></a>
+                        <a href="#"><img :src="logo" alt="Logo" srcset="" style="height: 50px; width: auto;"></a>
                     </div>
                     <div class="toggler">
                         <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
@@ -62,6 +62,7 @@ import AuthCheck from '../../utils/AuthCheck'
 import BaseButton from '../button/BaseButton.vue'
 import { useRouter } from 'vue-router'
 import SweetAlert from '../../utils/SweetAlert'
+import logo from '../../assets/images/logo/logo.png'
 
 const router = useRouter()
 const crudList = ref(true)
