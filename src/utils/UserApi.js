@@ -6,6 +6,6 @@ const endPoint = '/v1/userlist/'
 
 export default{
   getList(nama) {
-    return Api(baseUrl).get(`${endPoint}?nama=${nama}`)
+    return Api(baseUrl).get(`${endPoint}?nama=${nama}`, AuthCheck.getToken())
   }
 }

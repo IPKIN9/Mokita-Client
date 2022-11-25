@@ -132,7 +132,11 @@
 						</div>
 						<div class="form-group col-lg-6">
 							<label for="">Pengacara</label>
-							<BaseInputVue v-model="payload.pengacara" placeholder="Input here..." />
+							<BaseInputVue @keyup.stop="getPengacaraList" v-model="searchName.pengacara" placeholder="Search here..."/>
+							<Transition>
+								<BaseSelectSearchVue v-show="disPengacaraOptions.length != 0" v-model="payload.pengacara" :options="disPengacaraOptions" 
+								:display="disPengacara" @clickEvent="changePengacaraName" />
+							</Transition>
 							<span v-for="error in v$.pengacara.$errors" :key="error.$uid">
 								<small class="text-danger">field {{ error.$message }}.</small>
 							</span>
@@ -188,6 +192,7 @@ import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
 import PerkaraApi from '../utils/PerkaraApi'
+import UserApi from '../utils/UserApi'
 import HakimApi from '../utils/HakimApi'
 import JadwalApi from '../utils/JadwalApi'
 import GugatanApi from '../utils/GugatanApi'
@@ -387,8 +392,14 @@ const diData = {
 
 
 const disHakimOptions = ref([])
+const disPengacaraOptions = ref([])
 const disGugatanOptions = ref([])
 const disJadwalOptions = ref([])
+
+const disPengacara = {
+	value: 'nama',
+	label: 'nama',
+}
 
 const disGugatan = {
 	value: 'id',
@@ -402,6 +413,7 @@ const disJadwal = {
 
 const searchName = reactive({
 	hakim: '',
+	pengacara: '',
 	gugatan: '',
 	jadwal: ''
 })
@@ -419,6 +431,23 @@ const getHakimList = () => {
 		})
 	} else {
 		disHakimOptions.value = []
+	}
+}
+
+
+const getPengacaraList = () => {
+	if (searchName.pengacara.length >= 1) {
+		UserApi.getList(searchName.pengacara)
+		.then((res) => {
+			let item = res.data
+			disPengacaraOptions.value = item.data
+		})
+		.catch((err) => {
+			let code = err.response.status
+			errorHandle(code)
+		})
+	} else {
+		disPengacaraOptions.value = []
 	}
 }
 
@@ -457,6 +486,11 @@ const getJadwalList = () => {
 const changeHakimName = (params) => {
 	searchName.hakim = params.nama
 	disHakimOptions.value = []
+}
+
+const changePengacaraName = (params) => {
+	searchName.pengacara = params.nama
+	disPengacaraOptions.value = []
 }
 
 const changeGugatanName = (params) => {
