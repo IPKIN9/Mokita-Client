@@ -15,6 +15,6 @@
 <style>
     #error{height:100vh;background-color:#ebf3ff;padding-top:5rem}#error .img-error{width:100%}#error .error-title{font-size:4rem;margin-top:3rem}
 </style>
-<script>
+<script setup>
     import bgImg from '../assets/images/samples/error-404.png'
 </script>
