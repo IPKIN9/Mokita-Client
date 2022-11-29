@@ -7,5 +7,13 @@ const endPoint = '/v1/userlist/'
 export default{
   getList(nama) {
     return Api(baseUrl).get(`${endPoint}?nama=${nama}`, AuthCheck.getToken())
+  },
+
+  upsert(payload){
+    return Api(baseUrl).post(endPoint, payload, AuthCheck.getToken())
+  },
+
+  delete(id){
+    return Api(baseUrl).delete(`${endPoint}${id}`, AuthCheck.getToken())
   }
 }
