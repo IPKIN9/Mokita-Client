@@ -237,7 +237,7 @@ const rules = computed(() => {
         nip: {
             required,
             numeric,
-            maxLength: maxLength(13),
+            maxLength: maxLength(20),
         },
         tempat_lahir: {
             required,
