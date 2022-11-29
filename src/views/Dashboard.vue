@@ -106,30 +106,105 @@
               </thead>
               <tbody>
                 <tr v-for="(prog, index) in progress" :key="index">
-                  <td>{{prog.no_perkara}}</td>
-                  <td>{{prog.hakim}}</td>
-                  <td>{{prog.pengacara}}</td>
-                  <td>{{moment(prog.tgl_sidang).format('DD MMMM, YYYY | hh:mm')}} Wita</td>
-                  <td>{{prog.status}}</td>
+                  <td>{{ prog.no_perkara }}</td>
+                  <td>{{ prog.hakim }}</td>
+                  <td>{{ prog.pengacara }}</td>
+                  <td>{{ moment(prog.tgl_sidang).format('DD MMMM, YYYY | hh:mm') }} Wita</td>
+                  <td>{{ prog.status }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
+
+      <div v-if="roles === 'crud-list'" class="card-body rounded">
+        <BaseButton class="btn-primary mb-3" @clickEvent="showHideModal" typeButton="new-data">Tambah User</BaseButton>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead class="thead-dark">
+              <tr class="text-capitalize">
+                <th style="width: 4%;">no</th>
+                <th>nama</th>
+                <th>email</th>
+                <th style="width: 16%;">aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="text-capitalize" v-for="(user, index) in userList" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ user.nama }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <BaseButton class="btn-outline-primary btn-sm rounded" @clickEvent="editUser"
+                    :dataRows="userList[index]">EDIT
+                  </BaseButton>
+                  <BaseButton @clickEvent="deleteUser" class="btn-outline-danger btn-sm rounded ms-2" :dataId="user.id">HAPUS
+                  </BaseButton>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="userList.length < 1" class="d-flex justify-content-center p-5">
+            <div class="fs-3 me-2"><i class="bi bi-emoji-laughing"></i></div>
+            <span class="fs-4 fw-bold text-secondary">Data not
+              exist</span>
+          </div>
+        </div>
+      </div>
     </div>
     <FooterVue />
   </div>
+  <BaseModalVue mdSize="" idModal="myModal" mdTitle="Insert or update data">
+    <template v-slot:body>
+      <div class="modal-body">
+        <form class="pt-2 row" style="padding-bottom: 56px;">
+          <div class="form-group">
+            <label for="">Nama</label>
+            <BaseInput v-model="payload.nama" placeholder="Input here" />
+            <span v-for="error in v$.nama.$errors" :key="error.$uid">
+              <small class="text-danger">field {{ error.$message }}.</small>
+            </span>
+          </div>
+          <div class="form-group">
+            <label for="">Email</label>
+            <BaseInput v-model="payload.email" typeOf="email" placeholder="Input here" />
+            <span v-for="error in v$.email.$errors" :key="error.$uid">
+              <small class="text-danger">field {{ error.$message }}.</small>
+            </span>
+          </div>
+          <div class="form-group">
+            <label for="">Password</label>
+            <BaseInput v-model="payload.password" placeholder="Input here" />
+            <span v-for="error in v$.password.$errors" :key="error.$uid">
+              <small class="text-danger">field {{ error.$message }}.</small>
+            </span>
+          </div>
+        </form>
+      </div>
+    </template>
+    <template v-slot:footer>
+      <BaseButton @clickEvent="showHideModal" class="btn-danger rounded px-4">Cancel</BaseButton>
+      <BaseButton @clickEvent="upsertUser" class="btn-primary rounded px-4 ms-2">Proses</BaseButton>
+    </template>
+  </BaseModalVue>
 </template>
 <script setup>
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, maxLength, helpers, email } from '@vuelidate/validators'
 import SideBarVue from "../components/skelton/SideBar.vue";
 import FooterVue from "../components/skelton/Footer.vue";
 import DashboardApi from "../utils/DashboardApi";
+import UserApi from "../utils/UserApi";
 import AuthCheck from "../utils/AuthCheck";
 import { useRouter } from "vue-router";
-import { onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, onBeforeMount, onMounted, reactive, ref } from "vue";
 import SweetAlert from "../utils/SweetAlert";
 import moment from "moment";
+import BaseButton from "../components/button/BaseButton.vue";
+import Modal from 'bootstrap/js/dist/modal'
+import BaseModalVue from '../components/BaseModal.vue'
+import BaseInput from "../components/input/BaseInput.vue";
 
 const router = useRouter();
 const counting = reactive({
@@ -157,6 +232,127 @@ const getCount = () => {
     });
 };
 
+// ###############################################
+// Get user list
+const userList = ref([]);
+
+const getUser = () => {
+  UserApi.getList('')
+    .then((res) => {
+      let item = res.data
+      userList.value = item.data
+    }).catch((err) => {
+      console.log(err)
+    })
+}
+
+// ###############################################
+// Get user list
+const payload = reactive({
+  nama: '',
+  email: '',
+  password: ''
+})
+
+const myRegex = helpers.regex(/^[\w\s\d-]+$/d)
+
+const rules = computed(() => {
+  return {
+    nama: {
+      required,
+      maxLength: maxLength(100),
+      myField: helpers.withMessage('value cannot contain special characters', myRegex)
+    },
+    email: { required, email },
+    password: { required, maxLength: maxLength(15) }
+  }
+})
+const v$ = useVuelidate(rules, payload)
+
+const upsertUser = async () => {
+  const validate = await v$.value.$validate()
+  if (validate) {
+    UserApi.upsert(payload)
+      .then((res) => {
+        showHideModal()
+        let item = res.data
+        AlertSuccess({
+          text: item.message
+        })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+}
+
+// ###############################################
+// Edit user list
+const editUser = (params) => {
+  const dataRows = params.dataRows
+  for (const key in dataRows) {
+    if (key === 'password') {
+      continue
+    }
+    payload[key] = dataRows[key]
+    console.log(payload)
+  }
+  showHideModal()
+}
+
+// ###############################################
+// Edit user list
+const deleteUser = (params) => {
+  let id = params.dataId
+  SweetAlert.alertConfirm({
+    title: 'Delete?',
+    confirmtext: 'Yes, Deleted it'
+  })
+    .then((res) => {
+      if (res.isConfirmed) {
+        UserApi.delete(id)
+          .then((res) => {
+            let item = res.data
+            AlertSuccess({ text: item.message })
+          })
+          .catch((err) => {
+            let code = err.response.status
+            errorHandle(code)
+          })
+      }
+    })
+}
+
+const myModal = ref(null)
+
+const showHideModal = (params) => {
+  if (params && params.typeButton === 'new-data') {
+    clearInput()
+  }
+  myModal.value.show() ? myModal.value.show() : myModal.value.hide()
+}
+
+const clearInput = () => {
+  v$.value.$reset()
+  for (const key in payload) {
+    payload[key] = ''
+  }
+
+  delete payload.id
+}
+
+const AlertSuccess = (options) => {
+  SweetAlert.alertSuccess(options.text)
+    .then((res) => {
+      if (res.isConfirmed) {
+        getUser()
+        clearInput()
+      }
+    })
+}
+
+const roles = AuthCheck.rolesCheck()
+
 const errorHandle = (code) => {
   SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()));
 };
@@ -172,6 +368,13 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-  getCount();
+  getCount()
+  myModal.value = new Modal('#myModal', {
+    keyboard: false
+  })
+
+  if (roles === 'crud-list') {
+    getUser()
+  }
 });
 </script>
