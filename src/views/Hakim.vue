@@ -37,7 +37,7 @@
                                         <th>jabatan</th>
                                         <th>pendidikan</th>
                                         <th>sertifikat</th>
-                                        <th style="width: 14%;">aksi</th>
+                                        <th style="width: 16%;">aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -60,7 +60,7 @@
                                         <td class="align-top">{{ hakim.sertifikat }}</td>
                                         <td class="align-top">
                                             <BaseButtonVue class="btn-outline-primary btn-sm rounded"
-                                                @clickEvent="editHakim" :dataRows="hakimList[index]">EDIT
+                                                @clickEvent="editHakim" :dataRows="searchField[index]">EDIT
                                             </BaseButtonVue>
                                             <BaseButtonVue class="btn-outline-danger btn-sm rounded ms-2"
                                                 @clickEvent="deleteHakim" :dataId="hakim.id">HAPUS
@@ -90,7 +90,7 @@
                     <form class="pt-2 row" style="padding-bottom: 56px;">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="helpInputTop">Nama</label>
+                                <label for="">Nama</label>
                                 <BaseInputVue v-model="payload.nama" placeholder="Input here..." />
                                 <span v-for="error in v$.nama.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -99,7 +99,7 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="helpInputTop">Nip</label>
+                                <label for="">Nip</label>
                                 <BaseInputVue v-model="payload.nip" typeOf="number" placeholder="Input here..." />
                                 <span v-for="error in v$.nip.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -108,7 +108,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Tempat Lahir</label>
+                                <label for="">Tempat Lahir</label>
                                 <BaseInputVue v-model="payload.tempat_lahir" placeholder="Input here..." />
                                 <span v-for="error in v$.tempat_lahir.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -117,7 +117,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Tanggal Lahir</label>
+                                <label for="">Tanggal Lahir</label>
                                 <BaseInputVue v-model="payload.tgl_lahir" typeOf="date" placeholder="Input here..." />
                                 <span v-for="error in v$.tgl_lahir.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -126,7 +126,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Jabatan</label>
+                                <label for="">Jabatan</label>
                                 <BaseSelectVue v-model="payload.jabatan" :options="disJabatanOptions"
                                     :display="diJabatan" />
                                 <span v-for="error in v$.jabatan.$errors" :key="error.$uid">
@@ -136,7 +136,7 @@
                         </div>
                         <div class="col-lg-6 mt-2">
                             <div class="form-group">
-                                <label for="helpInputTop">Nomor Sertifikat</label>
+                                <label for="">Nomor Sertifikat</label>
                                 <BaseInputVue v-model="payload.sertifikat" placeholder="Input here..." />
                                 <span v-for="error in v$.sertifikat.$errors" :key="error.$uid">
                                     <small class="text-danger">field {{ error.$message }}.</small>
@@ -166,10 +166,12 @@
     </div>
 </template>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, handleError, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, maxLength, helpers, numeric } from '@vuelidate/validators'
 import HakimApi from '../utils/HakimApi'
+import AuthCheck from '../utils/AuthCheck'
+import { useRouter } from 'vue-router'
 import Modal from 'bootstrap/js/dist/modal'
 import SideBarVue from '../components/skelton/SideBar.vue'
 import FooterVue from '../components/skelton/Footer.vue'
@@ -183,6 +185,7 @@ import SweetAlert from '../utils/SweetAlert'
 
 // ##########################################################
 // Get data config
+const router = useRouter()
 const hakimList = ref([])
 const meta = reactive({
     limit: 10,
@@ -192,7 +195,7 @@ const meta = reactive({
 })
 
 const getHakimList = () => {
-    HakimApi.getList(meta.limit, meta.page)
+    HakimApi.getList(meta.limit, meta.page, '')
         .then((res) => {
             let item = res.data
 
@@ -203,7 +206,8 @@ const getHakimList = () => {
             meta.total = item.meta.total
         })
         .catch((err) => {
-            console.log(err);
+            let code = err.response.status
+            errorHandle(code)
         })
 }
 
@@ -233,7 +237,7 @@ const rules = computed(() => {
         nip: {
             required,
             numeric,
-            maxLength: maxLength(13),
+            maxLength: maxLength(20),
         },
         tempat_lahir: {
             required,
@@ -265,7 +269,8 @@ const upsertHakim = async () => {
                 })
             })
             .catch((err) => {
-                console.log(err)
+                let code = err.response.status
+                errorHandle(code)
             })
     }
 }
@@ -276,7 +281,6 @@ const editHakim = (params) => {
     for (const key in params.dataRows) {
         payload[key] = params.dataRows[key]
     }
-    console.log(payload);
     showHideModal()
 }
 
@@ -299,7 +303,8 @@ const deleteHakim = (params) => {
                         AlertSuccess({ text: item.message })
                     })
                     .catch((err) => {
-                        console.log(err)
+                        let code = err.response.status
+                        errorHandle(code)
                     })
             }
         })
@@ -369,11 +374,9 @@ const showHideModal = (params) => {
 const clearInput = () => {
     v$.value.$reset()
     for (const key in payload) {
-        for (const key in payload) {
-            payload[key] = ''
-        }
-        delete payload.id
+        payload[key] = ''
     }
+    delete payload.id
 }
 
 const AlertSuccess = (options) => {
@@ -385,6 +388,20 @@ const AlertSuccess = (options) => {
             }
         })
 }
+
+const errorHandle = (code) => {
+    SweetAlert.alertError(AuthCheck.checkToken(code, goToLogin()))
+}
+
+const goToLogin = () => {
+    router.replace('/login')
+}
+
+onBeforeMount(() => {
+    if (AuthCheck.checkToken() === 401) {
+        goToLogin()
+    }
+})
 
 onMounted(() => {
     getHakimList()

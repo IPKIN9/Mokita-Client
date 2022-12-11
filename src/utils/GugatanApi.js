@@ -1,8 +1,8 @@
+import AuthCheck from './AuthCheck.js'
 import Api from './Config.js'
-import AuthCheck from './AuthCheck'
 
 const baseUrl = import.meta.env.VITE_MOKITA_URL
-const endPoint = '/v1/hakim/'
+const endPoint = '/v1/gugatan/'
 
 export default{
   getList(limit, page, search) {
