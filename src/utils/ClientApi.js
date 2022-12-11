@@ -1,12 +1,12 @@
+import AuthCheck from './AuthCheck.js'
 import Api from './Config.js'
-import AuthCheck from './AuthCheck'
 
 const baseUrl = import.meta.env.VITE_MOKITA_URL
-const endPoint = '/v1/hakim/'
+const endPoint = '/v1/client/'
 
 export default{
-  getList(limit, page, search) {
-    return Api(baseUrl).get(`${endPoint}?limit=${limit}&page=${page}&search=${search}`, AuthCheck.getToken())
+  getList(limit, page, nama, status) {
+    return Api(baseUrl).get(`${endPoint}?limit=${limit}&page=${page}&nama=${nama}&status=${status}`, AuthCheck.getToken())
   },
 
   upsert(payload) {
